@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 # Live
 DEBUG = True
-ALLOWED_HOSTS = ['localhost','127.0.0.1','18.191.5.228','api.libraa.ml']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','18.191.5.228','api.libraa.ml','3.251.48.133','backend.aliblo.com']
 
 
 # Application definition
@@ -170,33 +170,32 @@ CKEDITOR_CONFIGS = {
 
 ##Email configuration
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.sendgrid.net'
-# EMAIL_USE_TLS = True
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = config('fromemail')
-# EMAIL_HOST_PASSWORD = config('fromemailpassword')
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 DEFAULT_FROM_EMAIL = config('fromemail')
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'   
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('fromemailpassword')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
+#EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+#EMAIL_HOST_PASSWORD = config('fromemailpassword')
 
 CORS_ALLOWED_ORIGINS = [
 
     "http://127.0.0.1:3000",
     "http://localhost:3000",
-    "https://the-d-libra.netlify.app",
-    "https://libraa.ml",
-    "https://www.libraa.ml",
-    "https://libraa-ml.netlify.app",
-    "https://libraaaa.herokuapp.com",
-    "https://dynamic-meta-tag.herokuapp.com"
+    "http://3.251.48.133:3000",
+    "https://3.251.48.133:3000",
+    "https://www.frontend.aliblo.com",
+    "https://frontend.aliblo.com",
 ]
 
+#CORS_ORIGIN_ALLOW_ALL = True
 
-CSRF_TRUSTED_ORIGINS=["https://api.libraa.ml"]
+CSRF_TRUSTED_ORIGINS=["https://www.backend.aliblo.com"]

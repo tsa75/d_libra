@@ -31,10 +31,11 @@ def verification(request,email,authtoken):
         data.status = "True"
         data.Otp = 0
         data.save()
-        return redirect("https://libraa.ml")
+        return redirect(config('frontend'))
 
     except:
-        return redirect("https://libraa.ml")
+        return redirect(config('frontend'))
+
 
 class signup(APIView):
     def post(self,request):
@@ -73,12 +74,8 @@ class signup(APIView):
                     encryptPassword = handler.hash(password)
                     randomToken = uc.randomcodegenrator()
                     data = User(email=email,password=encryptPassword,username = username,Otp = randomToken)
-                    if not settings.DEBUG:
-                        link = f"{request.META['HTTP_HOST']}/webapi/verification/{email}/{randomToken}"
 
-                    else:
-                        link = f"https://{settings.ALLOWED_HOSTS[3]}/webapi/verification/{email}/{randomToken}"
-
+                    link = f"{config('backend')}/webapi/verification/{email}/{randomToken}"
                     emailstatus = em.verificationEmail("Verification",config("fromemail"),email,link)
                     if emailstatus:
                         data.save()
