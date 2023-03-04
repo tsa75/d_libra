@@ -378,7 +378,7 @@ class parentCategories(APIView):
                     return Response(validator)
 
                 else:
-                    name = request.data.get('name').lower()
+                    name = request.data.get('name')
                     slug = request.data.get('slug')
                     image = request.FILES.get('image')
                     uniqueid = request.data.get('uniqueidentity')
@@ -563,7 +563,7 @@ class GetParentCategories(APIView):
 
                 else:
 
-                    name = request.data.get('name').lower()
+                    name = request.data.get('name')
                     courseid = request.data.get('courseid',"")
                     slug = request.data.get('slug')
                     image = request.FILES.get('image')
