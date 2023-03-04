@@ -1,5 +1,5 @@
 
-  
+
 from django.contrib import admin
 from webapi.models import *
 from import_export.admin import ImportExportModelAdmin
@@ -20,14 +20,14 @@ class CategoryAdmin(ImportExportModelAdmin, DraggableMPTTAdmin, admin.ModelAdmin
 
 	def ceated_date(self, obj):
 		if obj:
-			return obj.created_at.date() 
+			return obj.created_at.date()
 	ceated_date.admin_order_field = 'created_at'
 
 	def update_date(self, obj):
 		if obj:
-			return obj.updated_at.date() 
+			return obj.updated_at.date()
 	update_date.admin_order_field = 'updated_at'
-	
+
 	pass
 
 admin.site.register(Category, CategoryAdmin)
@@ -62,14 +62,14 @@ class ReviewModelAdmin(ImportExportModelAdmin):
 
 	def ceated_date(self, obj):
 		if obj:
-			return obj.created_at.date() 
+			return obj.created_at.date()
 	ceated_date.admin_order_field = 'created_at'
 
 	def update_date(self, obj):
 		if obj:
-			return obj.updated_at.date() 
+			return obj.updated_at.date()
 	update_date.admin_order_field = 'updated_at'
-	
+
 	pass
 
 

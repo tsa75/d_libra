@@ -105,7 +105,7 @@ def forgetPassword(subject,femail,toemail,token):
 
 
 def verificationEmail(subject,femail,toemail,link):
- 
+    
     try:
         html_content = f'''
             
@@ -132,7 +132,7 @@ def verificationEmail(subject,femail,toemail,link):
                             </tr>
                             <tr>
                                 <td style="text-align:center;">
-                           
+                            
                                 </td>
                             </tr>
                             <tr>

@@ -12,7 +12,7 @@ import uuid
 user_role =(
     ("normaluser", "normaluser"),
     ("editor", "editor"),
-    
+
 )
 
 RatingStatus = (
@@ -117,11 +117,11 @@ class Category(MPTTModel):
     CategoryType = models.CharField(max_length=20,default="")
     Type = models.CharField(max_length=30,choices=Coursetype,default="popularcourses")
 
-    
+
     class Meta:
         verbose_name = 'Course Chapter model'
-    
-    
+
+
     def __str__(self):
         return self.name
 
@@ -141,8 +141,8 @@ class courseViews(models.Model):
 
 class SerSubCategories(serializers.ModelSerializer):
 
-    
-    
+
+
     class Meta:
         model = Category
         fields = ['id','name']

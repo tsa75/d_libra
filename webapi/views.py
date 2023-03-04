@@ -78,9 +78,6 @@ class signup(APIView):
 
                     else:
                         link = f"https://{settings.ALLOWED_HOSTS[3]}/webapi/verification/{email}/{randomToken}"
-                    
-                    
-
 
                     emailstatus = em.verificationEmail("Verification",config("fromemail"),email,link)
                     if emailstatus:
@@ -98,7 +95,7 @@ class signup(APIView):
             return Response(message,status=500)
 
 class signupwithgoogle(APIView):
-    
+
     def post(self,request):
         try:
             requireFields = ['email','ui','displayName']
@@ -116,7 +113,7 @@ class signupwithgoogle(APIView):
                 data = User.objects.filter(Q(email = email) | Q(username = username)).first()
                 if data:
                     if data.role == "normaluser":
-                    
+
                         ### Jwt creation
                         access_token_payload = {
                             'id': data.uid,
@@ -129,16 +126,16 @@ class signupwithgoogle(APIView):
                         access_token = jwt.encode(access_token_payload,config('normaluserkey'), algorithm='HS256')
 
                         userpayload = { 'id': data.uid,'username': data.username,'email':data.email,'fname':data.fname,'lname':data.lname,'profile':data.profile.url,'role':data.role}
-                        
-                        
+
+
                         return Response({'status':True,'message':'login Successfully',"data":userpayload,"token":access_token})
 
 
                     else:
                         return Response({'status':False,'message':'You dont have excess to login with social auth'})
-                  
-                
-                
+
+
+
                 else:
                     fetchuser = User(email=email,password=handler.hash(password),username = username,fname = firstname,lname = lastname,status = "True")
                     emailStatus = em.credentialsend("Confidentiality",config('fromemail'),email,{'username':username,'password':password})
@@ -158,8 +155,8 @@ class signupwithgoogle(APIView):
                         access_token = jwt.encode(access_token_payload,config('normaluserkey'), algorithm='HS256')
 
                         userpayload = { 'id': fetchuser.uid,'username': fetchuser.username,'email':fetchuser.email,'fname':fetchuser.fname,'lname':fetchuser.lname,'profile':fetchuser.profile.url,'role':fetchuser.role}
-                        
-                        
+
+
                         return Response({'status':True,'message':'login Successfully',"data":userpayload,"token":access_token})
 
 
@@ -169,7 +166,7 @@ class signupwithgoogle(APIView):
         except Exception as e:
             message = {'status':"error",'message':str(e)}
             return Response(message,status=500)
-        
+
 class userlogin(APIView):
     def post(self,request):
         try:
@@ -268,7 +265,7 @@ class userprofile(APIView):
                 if not validator:
                     return Response({'status':'error','message':f'{requireFields} all keys are required'})
 
-               
+
 
                 else:
                     data = User.objects.filter(uid = my_token['id']).first()
@@ -367,7 +364,7 @@ class parentCategories(APIView):
             else:
                 return Response({'status':False,'message':'Unauthorized'})
 
-        
+
         except Exception as e:
             message = {'status':"error",'message':str(e)}
             return Response(message,status=500)
@@ -392,7 +389,7 @@ class parentCategories(APIView):
                     filenameStaus = uc.imageValidator(image,False,False)
                     if not filenameStaus:
                         return Response({'status':False,'message':'Image format is incorrect'})
-                    
+
                     ##check a basic already critarea
                     categoryExist = parentCategory.objects.filter(name=name).first()
                     if categoryExist:
@@ -415,7 +412,7 @@ class parentCategories(APIView):
                             'status':False,
                             'message':'Please choose a unique id'
                         })
-                    
+
                     ## check parent category
                     parent = request.data.get('parent',False)
                     if not parent:
@@ -423,7 +420,7 @@ class parentCategories(APIView):
                     else:
                         fetechparent = parentCategory.objects.get(parentid = parent)
                         data = parentCategory(name=name,slug=slug,image=image,unique_identifier = uniqueid,parent = fetechparent)
-                    
+
                     data.save()
                     return Response({"status":True,"message":"Add successfully"})
 
@@ -445,11 +442,11 @@ class GetParentCategories(APIView):
             if not query:
                 mydata = Category.objects.filter(CategoryType="Category").annotate(views = Count('courseviewers__id'),totalratinng=Avg('courserating__rating'),totalperson = Count('courserating__rating')).values('id','created_at','updated_at','image','Type','views','unique_identifier','totalratinng','totalperson',CategoryName=F('name'),ParentCategoryType=F('parent_category__name'),authorname = F('author__fname'))
 
-                
+
             else:
-        
+
                 mydata = Category.objects.filter(CategoryType="Category",name__icontains = query).annotate(views = Count('courseviewers__id'),totalratinng=Avg('courserating__rating')).values('id','created_at','updated_at','image','Type','views','unique_identifier','totalratinng',CategoryName=F('name'),ParentCategoryType=F('parent_category__name'),authorname = F('author__fname'))
-            
+
 
             finalarray = list()
             for i in range(len(mycategorylits)):
@@ -464,11 +461,11 @@ class GetParentCategories(APIView):
                 finalarray.append(obj)
 
 
-                  
-                    
 
-          
-        
+
+
+
+
             Data = [{'status':True,'data':finalarray}]
             return Response(Data)
 
@@ -488,7 +485,7 @@ class GetParentCategories(APIView):
         # if not query:
         #     mydata = Category.objects.filter(CategoryType="Category").annotate(views = Count('courseviewers__id')).values('id','image','Type','views',CategoryName=F('name'),ParentCategoryType=F('parent_category__name'),authorname = F('author__fname'))
 
-            
+
         # else:
         #     mydata = Category.objects.filter(CategoryType="Category",name__icontains = query).annotate(views = Count('courseviewers__id')).values('id','image','Type','views',CategoryName=F('name'),ParentCategoryType=F('parent_category__name'),authorname = F('author__fname'))
 
@@ -499,7 +496,7 @@ class GetParentCategories(APIView):
         #     for j in mydata:
         #         if i['courseid'] == j['id']:
         #             starobj.append({"courseid":i['courseid'],"rating":i["rating"]})
-                   
+
 
 
         # ##populate the data
@@ -527,12 +524,12 @@ class GetParentCategories(APIView):
         #     else:
         #         del k['rating']
 
-     
+
 
         # Categorylist = []
         # mylistlist = []
 
-        
+
 
         # mycategorylits = parentCategory.objects.values_list('name',flat=True)
         # unique_list = []
@@ -540,16 +537,16 @@ class GetParentCategories(APIView):
         #     listcategory = list()
         #     for j in range(len(mydata)):
 
-               
+
         #         if mycategorylits[i] == mydata[j]['ParentCategoryType']:
-                    
+
         #             listcategory.append(mydata[j])
-            
-                    
+
+
 
         #     data = {'chaptername':mycategorylits[i],'items':listcategory}
         #     mylistlist.append(data)
-        
+
         # Data = [{'status':True,'data':mylistlist}]
 
         # return Response(Data,status=200)
@@ -566,7 +563,7 @@ class GetParentCategories(APIView):
                 validator = uc.keyValidation(True,True,request.data,requireFields)
                 if validator:
                     return Response(validator)
-                
+
                 else:
 
                     name = request.data.get('name').lower()
@@ -575,8 +572,8 @@ class GetParentCategories(APIView):
                     image = request.FILES.get('image')
                     uniqueid = request.data.get('uniqueidentity')
                     categoryid = request.data.get('categoryid')
-                    
-                
+
+
                     ##Image validation
                     filenameStaus = uc.imageValidator(image,False,False)
                     if not filenameStaus:
@@ -606,12 +603,12 @@ class GetParentCategories(APIView):
                                 'status':False,
                                 'message':'Coursename already exist'
                             })
-                        
+
                         else:
                             fetchParent = parentCategory.objects.filter(parentid = categoryid).first()
                             if fetchParent:
-                                ##fetch author 
-                                authordata = User.objects.get(uid = my_token['id']) 
+                                ##fetch author
+                                authordata = User.objects.get(uid = my_token['id'])
                                 data = Category(name=name,slug=slug,image=image,unique_identifier = uniqueid,CategoryType = "Category",parent_category = fetchParent,author = authordata)
                                 data.save()
                                 return Response({'status':True,'message':"Add Course Successfully"},status=201)
@@ -630,7 +627,7 @@ class GetParentCategories(APIView):
                                     'status':False,
                                     'message':'Chapter already exist in these course'
                                 })
-                            
+
                             else:
                                 data = Category(name=name,slug=slug,image=image,unique_identifier = uniqueid,parent = fetchparent,CategoryType="SubCategory")
                                 data.save()
@@ -683,7 +680,7 @@ class allcategories(APIView):
         except Exception as e:
             message = {'status':"error",'message':str(e)}
             return Response(message,status=500)
-         
+
 class GetChildCategories(APIView):
 
     def get(self,request):
@@ -726,7 +723,7 @@ class AddPost(APIView):
 
             if int(categoryid) == list(nextcategory)[-1]:
                 nextindex = "null"
-                
+
 
 
 
@@ -734,8 +731,8 @@ class AddPost(APIView):
             else:
                 if nextindex > 0:
                     previous =  nextcategory[nextindex -1]
-                
-                
+
+
                 nextindex = nextcategory[nextindex + 1]
 
 
@@ -756,9 +753,9 @@ class AddPost(APIView):
             ##check bookmarktype
             try:
                 my_token = uc.tokenauth(request.META.get('HTTP_AUTHORIZATION',False)[7:],role)
-                if my_token: 
+                if my_token:
                     bookmarkType = CoursePriority.objects.filter(content_id = postid,author = my_token['id']).values('PriorityType').first()
-                
+
                 else:
                     bookmarkType = "null"
 
@@ -768,11 +765,11 @@ class AddPost(APIView):
             ## chapter name
             if courseid:
                 chapters = Category.objects.filter(parent__id=courseid).values('id',CategoryName=F('name'))
-                
+
 
             else:
                 chapters = list()
-                
+
 
             return Response({'status':True,'post':post,'all':data,'nextcategory':nextindex,"previous":previous,"bookmark":bookmarkType,"chapters":chapters},status=200)
 
@@ -820,7 +817,7 @@ class AddPost(APIView):
                     checkAlreadyExist = ReviewModel.objects.filter(unique_identifier = uniqueidentifier).first()
                     if checkAlreadyExist:
                         return Response({'status':False,'message':"Please provide a uniqueid"},status=200)
-                    
+
                     catgory = Category.objects.filter(id = Categroyid).first()
                     if catgory:
                         data = ReviewModel(title=title,tags=tags,images=image,categories = catgory,author = User.objects.filter(uid = my_token['id']).first(),content=content,meta_description=meta_description,OGP=OGP,unique_identifier = uniqueidentifier)
@@ -860,7 +857,7 @@ class AddPost(APIView):
                     content = request.data['content']
                     meta_description = request.data['meta_description']
                     OGP = request.data['OGP']
-                    
+
                     data = ReviewModel.objects.filter(id = Postid).first()
 
                     if data:
@@ -870,7 +867,7 @@ class AddPost(APIView):
                         data.meta_description = meta_description
                         data.OGP = OGP
 
-                       
+
                         if image:
                              ##Image validation
                             filenameStaus = uc.imageValidator(image,False,False)
@@ -879,7 +876,7 @@ class AddPost(APIView):
                             else:
                                 data.images = image
 
-                        
+
                         data.save()
                         return Response({'status':True,'message':"Update Post Successfully"},status=200)
 
@@ -993,10 +990,10 @@ class GetDashboardDataWithAuthorization(APIView):
 
         id = request.GET.get('id')
 
-        
+
         if id:
             checkdata = Category.objects.filter(id=id).first()
-          
+
             if checkdata:
                 if checkdata.CategoryType == "Category":
                     data = Category.objects.filter(parent__id=id,CategoryType="SubCategory").values('id','unique_identifier',CategoryName=F('name'))
@@ -1006,25 +1003,25 @@ class GetDashboardDataWithAuthorization(APIView):
                     if data:
                         for i in range(len(myCategorydata)):
 
-                           
                             mydata = ReviewModel.objects.filter(categories__id = myCategorydata[i]['id']).values('id','title','unique_identifier','images','meta_keywords','meta_description',slug = F('categories__slug'),coursename = F('categories__parent__name'),chapter=F('categories__name'))
+
                             myCategorydata[i]['lecture'] = mydata
-                            
+
                             for l in myCategorydata[i]['lecture']:
                                 l['category'] = str(checkdata.parent_category)
 
                         for j in range(len(data)):
-                            
-                        
                             mydata = ReviewModel.objects.filter(categories__id = data[j]['id']).values('id','title','images','unique_identifier','meta_keywords','meta_description',slug = F('categories__slug'),coursename = F('categories__parent__name'),chapter=F('categories__name'),category = F('categories__parent__parent_category__name'),courseid = F('categories__parent__id'))
+
+
                             data[j]['lecture'] = mydata
 
-                        
+
                         data = list(myCategorydata)+list(data)
 
                         try:
                             my_token = uc.tokenauth(request.META.get('HTTP_AUTHORIZATION',False)[7:],role)
-                            if my_token: 
+                            if my_token:
 
                                 mydata = CoursePriority.objects.filter(author__uid = my_token['id']).values('PriorityType',Contentid=F('content_id__id'))
 
@@ -1048,15 +1045,15 @@ class GetDashboardDataWithAuthorization(APIView):
                             for i in range(len(data)):
                                 for j in range(len(data[i]['lecture'])):
                                     data[i]['lecture'][j]['PriorityType'] = "null"
-                                            
-                    
-                    
+
+
+
                         ##prepare dropdown
                         dropdown = list()
                         for j in range(1,len(data)):
                             obj = {"id":data[j]['id'],"CategoryName":data[j]['CategoryName']}
                             dropdown.append(obj)
-                        
+
                         return Response({'status':True,"slugimg":myCategorydata[0]['slugimg'],'data':data,"dropdown":{
 
                                 "parent":{"id":data[0]['id'],"CategoryName":data[0]['CategoryName']},
@@ -1064,8 +1061,8 @@ class GetDashboardDataWithAuthorization(APIView):
                             }},status=200)
 
                     else:
-                       
-                        
+
+
                         if myCategorydata:
 
                             for i in range(len(myCategorydata)):
@@ -1076,21 +1073,21 @@ class GetDashboardDataWithAuthorization(APIView):
 
                                 try:
                                     my_token = uc.tokenauth(request.META.get('HTTP_AUTHORIZATION',False)[7:],role)
-                                    if my_token: 
+                                    if my_token:
 
                                         mydata = CoursePriority.objects.filter(author__uid = my_token['id']).values('PriorityType',Contentid=F('content_id__id'))
 
-                                    
+
                                         for i in range(len(data)):
-                                            
+
                                             for j in range(len(data[i]['lecture'])):
-                                            
+
                                                 for k in range(len(mydata)):
 
                                                     if data[i]['lecture'][j]['id'] == mydata[k]['Contentid']:
 
                                                         data[i]['lecture'][j]['PriorityType'] = mydata[k]['PriorityType']
-                                                        
+
                                                         print()
 
                                                     else:
@@ -1099,18 +1096,18 @@ class GetDashboardDataWithAuthorization(APIView):
                                 except:
 
                                     for i in range(len(data)):
-                                        
+
                                         for j in range(len(data[i]['lecture'])):
-                                        
+
                                             data[i]['lecture'][j]['PriorityType'] = "null"
-                    
-                    
+
+
                             ##prepare dropdown
                             dropdown = list()
                             for j in range(1,len(data)):
                                 obj = {"id":data[j]['id'],"CategoryName":data[j]['CategoryName']}
                                 dropdown.append(obj)
-                            
+
                             return Response({'status':True,'data':data,"slugimg":myCategorydata[0]['slugimg'],"dropdown":{
 
                                 "parent":{"id":data[0]['id'],"CategoryName":data[0]['CategoryName']},
@@ -1126,7 +1123,7 @@ class GetDashboardDataWithAuthorization(APIView):
 
                 return Response({'status':False,'message':"Invalid Course Id"},status=200)
 
-        
+
 
         else:
             data = Category.objects.filter(CategoryType="SubCategory").values('id',CategoryName=F('name'))
@@ -1138,7 +1135,7 @@ class GetDashboardDataWithAuthorization(APIView):
 
             return Response({'status':True,'data':data},status=200)
 
-        
+
 
 
         # except Exception as e:
@@ -1150,7 +1147,7 @@ class GetDashboardDataWithAuthorization(APIView):
 
 class recentlyViewCourseStatus(APIView):
 
-   
+
 
     def get(self,request):
 
@@ -1168,7 +1165,7 @@ class recentlyViewCourseStatus(APIView):
                 for j in recentlyviewdata:
                     if i['courseid'] == j['Courseid']:
                         starobj.append({"courseid":i['courseid'],"rating":i["rating"]})
-                    
+
 
 
             ##populate the data
@@ -1205,7 +1202,7 @@ class recentlyViewCourseStatus(APIView):
                 for j in bookmarkContent:
                     if i['courseid'] == j['Courseid']:
                         starobj.append({"courseid":i['courseid'],"rating":i["rating"]})
-                    
+
 
 
             ##populate the data
@@ -1494,7 +1491,7 @@ class RatingContent(APIView):
                     checkAlready.rating = rating
                     checkAlready.save()
 
-                    
+
 
                     return Response({'status':False,'message':'Rating Content Sucessfully',"data":{'content_id':content_id,'rating':rating}})
 
@@ -1534,7 +1531,7 @@ class RatingCourse(APIView):
                     rating = request.data.get('rating')
                     comment = request.data.get('comment')
 
-            
+
 
                     checkCourse = Category.objects.filter(id = course_id).first()
                     if not checkCourse:
@@ -1559,9 +1556,9 @@ class RatingCourse(APIView):
             else:
                 return Response({'status':False,'message':'Unauthorized'},status=401)
 
-        
 
-        
+
+
         except Exception as e:
             message = {'status':"error",'message':str(e)}
             return Response(message,status=500)
@@ -1603,34 +1600,34 @@ class SearchCourse(APIView):
             try:
 
                 my_token = uc.tokenauth(request.META.get('HTTP_AUTHORIZATION',False)[7:],role)
-                if my_token: 
+                if my_token:
 
                     mydata = CoursePriority.objects.filter(author__uid = my_token['id']).values('PriorityType',Contentid=F('content_id__id'))
 
-                            
+
                     for i in range(len(data)):
-                        
+
                         for j in range(len(data[i]['items'])):
-                        
+
                             for k in range(len(mydata)):
-                                
+
                                 if data[i]['items'][j]['id'] == mydata[k]['Contentid']:
 
                                     data[i]['items'][j]['PriorityType'] = mydata[k]['PriorityType']
                                     break
-                                    
+
 
                                 else:
                                     data[i]['items'][j]['PriorityType'] = "null"
 
 
-                
+
             except:
                 for i in range(len(data)):
                     for j in range(len(data[i]['items'])):
                         data[i]['items'][j]['PriorityType'] = "null"
-            
-            
+
+
             return Response({'status':True,'data':data},status=200)
 
 
@@ -1653,7 +1650,7 @@ class SetPriority(APIView):
             prioritylist = bookmarkName.objects.filter(user__uid = my_token['id']).values_list('name',flat=True).distinct()
 
             if prioritylist:
-             
+
                 for i in range(len(prioritylist)):
 
                     getdata = CoursePriority.objects.filter(author = my_token['id'],PriorityType=prioritylist[i]).values(Chapterid=F('content_id__categories__id'),Contentid=F('content_id__id'),Contenttitle=F('content_id__title'),Contentimage=F('content_id__images'),chapter=F('content_id__categories__name'),coursename = F('content_id__categories__parent__name'),slug = F('content_id__categories__slug'),courseid = F('content_id__categories__parent__id'),metakeywords = F('content_id__meta_keywords'),meta_description = F('content_id__meta_description'),unique_identifier = F('content_id__unique_identifier'))
@@ -1662,12 +1659,12 @@ class SetPriority(APIView):
                     mylistlist.append(data)
 
 
-                    
+
 
                 return Response({'status':True,'data':mylistlist},status=200)
 
             else:
-                
+
                 mylistlist = [[{"PriorityType":"High Priority Review List","items":[]}],[{"PriorityType":"Review List","items":[]}],[{"PriorityType":"For future read","items":[]}]]
                 return Response({'status':True,'data':mylistlist},status=200)
 
@@ -1872,7 +1869,7 @@ class UpdatePassword(APIView):
                         if not checkpassword:
                             return Response({'status':False,'message':'Password must be 8 or less than 20 characters'})
 
-                        
+
                         data.password = handler.hash(Password)
                         data.save()
 
@@ -1887,7 +1884,7 @@ class UpdatePassword(APIView):
 
         else:
             return Response({'status':False,'message':'Unauthorized'},status=401)
-            
+
 class recentlyViewContenthistory(APIView):
 
     def get(self,request):
@@ -1901,10 +1898,10 @@ class recentlyViewContenthistory(APIView):
 
             today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
             today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
-            
+
             weekly = datetime.datetime.now().date() - timedelta(days=7)
             monthly = datetime.datetime.now().date() - timedelta(days=30)
-     
+
 
             todaydata = RecentlyviewContent.objects.filter(created_at__range=(today_min, today_max),author__uid = my_token['id']).values(chapterid=F('content_id__categories'),Content_id=F('content_id__id'),title=F('content_id__title'),images=F('content_id__images'),created = F('content_id__created_at'),chapter = F('content_id__categories__name'),coursename = F('content_id__categories__parent__name'),slug = F('content_id__categories__slug'),courseid = F('content_id__categories__parent__id'),category = F('content_id__categories__parent__parent_category__name'))
 
@@ -1931,7 +1928,7 @@ class recentlyViewContenthistory(APIView):
                 else:
                     yesterddaydata[i]['PriorityType'] = "null"
 
-           
+
             weeklydata = RecentlyviewContent.objects.filter(created_at__range=[weekly,today],author__uid = my_token['id']).values(chapterid=F('content_id__categories'),Content_id=F('content_id__id'),title=F('content_id__title'),images=F('content_id__images'),created = F('content_id__created_at'),chapter = F('content_id__categories__name'),coursename = F('content_id__categories__parent__name'),slug = F('content_id__categories__slug'),courseid = F('content_id__categories__parent__id'),category = F('content_id__categories__parent__parent_category__name'))
             for i in range(len(weeklydata)):
 
@@ -1953,7 +1950,7 @@ class recentlyViewContenthistory(APIView):
                 else:
                     monthlydata[i]['PriorityType'] = "null"
 
-           
+
 
             data = [{'chapterName':"Today",'items':todaydata},{'chapterName': "Yesterday",'items':yesterddaydata},{'chapterName': "This Week",'items':weeklydata},{'chapterName': "This Month",'items':monthlydata}]
 
@@ -1974,7 +1971,7 @@ class logout(APIView):
                 blacklistToken(user = fetchuser,token = request.META['HTTP_AUTHORIZATION'][7:]).save()
                 return Response({"status":True,"message":"logout successfully"})
 
-            
+
             else:
                 return Response({'status':False,'message':'Unauthorized'},status=401)
 
@@ -1995,7 +1992,7 @@ class GetTopicData(APIView):
 
                 Postid = request.GET['Postid']
                 data = Category.objects.filter(id = Postid).values('id','name','image').first()
-            
+
 
                 if data:
                     mydata = ReviewModel.objects.filter(categories__id = data['id']).values('id','title','images','meta_keywords','meta_description')
@@ -2023,17 +2020,17 @@ class bookadd(APIView):
         except Exception as e:
             message = {'status':"error",'message':str(e)}
             return Response(message,status=500)
-    
+
     def post(self,request):
         try:
             obj = request.data
             if len(obj) > 0:
-                
+
                 ##remove duplicates
                 statusDuplicate = uc.removeDuplicates(obj)
                 if not statusDuplicate:
                     return Response({"status":False,"message":"Please enter a valid data"})
-                
+
                 bulklist = list()
                 fetchuser = User.objects.filter(uid = request.GET['token']['id']).first()
 
@@ -2060,7 +2057,7 @@ class bookadd(APIView):
                     return Response({"status":True,"message":"All bookmarks already exist"})
 
 
-            
+
             else:
                 return Response({"status":False,"message":"Please enter a valid data"})
 
@@ -2080,28 +2077,28 @@ class bookadd(APIView):
             validator = uc.keyValidation(True,True,request.data,requireFields)
             if validator:
                 return Response(validator,status=200)
-            
+
             else:
                 data = bookmarkName.objects.filter(id = request.data['id'],user = request.GET['token']['id']).first()
                 if data:
                     previousbookmark = data.name
                     checkdata = bookmarkName.objects.filter(name = request.data['name'],user = request.GET['token']['id']).first()
                     if not checkdata:
-                        
+
                         data.name = request.data['name']
                         data.save()
-                        
+
                     # check if course priority is add so update
                     checkalready = CoursePriority.objects.filter(PriorityType = previousbookmark,author = request.GET['token']['id'])
-                    
+
                     if checkalready:
                         checkalready.update(PriorityType = request.data['name'])
-                        
+
 
                     return Response({"status":True,"message":"Update successfully"})
 
 
-                    
+
 
                 else:
                     return Response({"status":False,"message":"Incorrect id"})
@@ -2144,17 +2141,17 @@ class addcontent(APIView):
             else:
                 #prioritylist = ['High Priority Review List','Review List','For future read']
                 prioritylist = bookmarkName.objects.filter(user = request.GET['token']['id']).values_list('name', flat=True).distinct()
-                
+
                 #print(prioritylist[0])
                 #return Response("this")
 
-                
+
                 ##check if user firsttime add
-                
+
                 fetchcontent = ReviewModel.objects.filter(id = request.data['contentid']).first()
                 if not fetchcontent:
                     return Response({"status":False,"message":"incorrect contentid"})
-                    
+
 
                 else:
                     fetchuser =  User.objects.filter(uid = request.GET['token']['id']).first()
@@ -2172,23 +2169,23 @@ class addcontent(APIView):
                         if bookmarkname:
                             prioritylist = list(bookmarkname)
 
-                        
-        
 
-                        
+
+
+
                         if checkalreadyAd.PriorityType in prioritylist:
                             if len(prioritylist) != prioritylist.index(checkalreadyAd.PriorityType) + 1:
                                 checkalreadyAd.PriorityType = prioritylist[prioritylist.index(checkalreadyAd.PriorityType) + 1]
                                 checkalreadyAd.save()
-                            
+
                             else:
                                 # checkalreadyAd.PriorityType = prioritylist[0]
                                 # checkalreadyAd.save()
                                 checkalreadyAd.delete()
 
 
-                        
-                        return Response({"status":False,"message":"Update bookmark"})   
+
+                        return Response({"status":False,"message":"Update bookmark"})
 
 
         except Exception as e:
@@ -2221,7 +2218,7 @@ class feedbackrecord(APIView):
                 ##fetch author
                 tokenid = request.GET['token']
                 authorFetch = User.objects.get(uid = tokenid['id'])
-                
+
                 ###check user already record response
 
                 fetchFeedback = feedback.objects.filter(author = authorFetch,topic = topicid)
@@ -2257,7 +2254,7 @@ class GetPriorityCourse(APIView):
 
 
             data = CoursePriority.objects.filter(author__uid = request.GET['token']['id']).values_list('content_id__id',flat=True).distinct()
-            
+
             mydata = ReviewModel.objects.filter(id__in = data).values(Courseid=F('categories__parent__id'),Coursename=F('categories__parent__name')).distinct()
 
             for i in range(len(mydata)):
@@ -2272,7 +2269,7 @@ class GetPriorityCourse(APIView):
                     if mydata[j]['Coursename'] == None:
                         dataObj = ReviewModel.objects.filter(id = mydata[j]['Chapter'][0]['contentid']).values(Courseid=F('categories__id'),Coursename=F('categories__name')).first()
                         mydata[j]['Coursename'] = dataObj['Coursename']
-                        
+
             return Response({"status":True,"data":mydata})
 
         except Exception as e:
@@ -2303,7 +2300,7 @@ class exportcategory_or_course(APIView):
             validator = uc.keyValidation(True,True,request.data,requireFields)
             if validator:
                 return Response(validator)
-            
+
             else:
                 filepath = request.FILES.get('file')
                 columnFormat = ["name","image","parent","unique_identifier","slug","category"]
@@ -2319,9 +2316,9 @@ class exportcategory_or_course(APIView):
                     dataColumns =  datafetchfile.columns
                     if set(dataColumns) == set(columnFormat):
                         ## filter parents
-                        authordata = User.objects.get(uid = my_token['id']) 
+                        authordata = User.objects.get(uid = my_token['id'])
                         for one,two,three,four,five,six in zip( datafetchfile['name'],datafetchfile['image'],datafetchfile['parent'],datafetchfile['unique_identifier'],datafetchfile['slug'],datafetchfile['category']):
-                        
+
                             if type(three) == float:
                                 ##first insert parent means course
                                 fetchparentCategory = parentCategory.objects.filter(name = six).first()
@@ -2332,7 +2329,7 @@ class exportcategory_or_course(APIView):
 
                                         createParent = Category(name = one,parent_category = fetchparentCategory,slug = five,CategoryType = "Category",image = two,unique_identifier = four,author = authordata)
                                         createParent.save()
-                                      
+
 
 
                                         for subone,subtwo,subthree,subfour,subfive,subsix in zip( datafetchfile['name'],datafetchfile['image'],datafetchfile['parent'],datafetchfile['unique_identifier'],datafetchfile['slug'],datafetchfile['category']):
@@ -2340,28 +2337,28 @@ class exportcategory_or_course(APIView):
                                             if type(subthree) != float:
                                                 if str(subfour).startswith(str(four)):
                                                     Category(name = subone,slug = subfive,CategoryType = "SubCategory",image = subtwo,unique_identifier = subfour,parent = createParent).save()
-                                                   
-                                             
 
 
 
-                                        
+
+
+
 
                                     else:
                                         return Response({'status':False,'message':f'{one} Coursename already exists'})
 
-                                    
+
 
                                 else:
                                     return Response({'status':False,'message':'Wrong category'})
 
 
-                               
-                        
+
+
                         return Response({"status":True,"message":"Data Upload Successfully"})
 
 
-                    
+
                     else:
                         return Response({'status':'warning','message':"Column format is incorrect"})
 
@@ -2399,25 +2396,25 @@ class exportcategory_and_course(APIView):
                         dataColumns =  datafetchfile.columns
 
                         if set(dataColumns) == set(columnFormat):
-                            
+
                             ##author
                             fetchauthor = User.objects.get(uid = my_token['id'])
 
-                            # selecting rows based on condition 
+                            # selecting rows based on condition
                             rslt_df = datafetchfile[datafetchfile['parent_category_id'] == "-"]
                             for one,two,three,four,five in (zip(rslt_df['category_course_id'],rslt_df['category_course_name'],rslt_df['parent_category_id'],rslt_df['slug'],rslt_df['category_icon_img'])):
-                                
-                                ## check if already 
+
+                                ## check if already
                                 alreadyexistParent = parentCategory.objects.filter(unique_identifier = one).first()
                                 if not alreadyexistParent:
                                     createparent = parentCategory(unique_identifier = one,name = two,slug = four,image = "category_pic/"+five)
                                     createparent.save()
 
-                            
-                            # selecting rows based on condition 
+
+                            # selecting rows based on condition
                             rslt_df = datafetchfile[datafetchfile['parent_category_id'] != "-"]
                             for one,two,three,four,five in (zip(rslt_df['category_course_id'],rslt_df['category_course_name'],rslt_df['parent_category_id'],rslt_df['slug'],rslt_df['category_icon_img'])):
-                                
+
                                 if type(one) == int:
                                     #create category
                                     fetchParent = parentCategory.objects.filter(unique_identifier = three).first()
@@ -2425,7 +2422,7 @@ class exportcategory_and_course(APIView):
                                         # print("data",one,two,three,four,five)
                                         ## check if already exist
                                         alreadyslug = parentCategory.objects.filter(Q(unique_identifier = one) |Q(slug = four)).first()
-                                        
+
                                         if not alreadyslug:
 
                                             data = parentCategory(unique_identifier = one,name = two,slug = four,image = "category_pic/"+five,parent = fetchParent )
@@ -2443,18 +2440,18 @@ class exportcategory_and_course(APIView):
                                         if not alreadyexistCritArea:
                                             createcourses = Category(unique_identifier = one,name = two,parent_category = fetchParent,slug = four,image =  "category_pic/"+five,author = fetchauthor,CategoryType = "Category")
                                             createcourses.save()
-                                        
-                                    
-
-                                        
-
-                                    
 
 
 
-                                
 
-                                
+
+
+
+
+
+
+
+
 
 
                             return Response({"status":True,"message":"Data Upload Successfully"})
@@ -2503,15 +2500,15 @@ class course_chapters(APIView):
 
                         if set(dataColumns) == set(columnFormat):
                             for one,two,three,four,five in (zip(datafetchfile['capter_id'],datafetchfile['chapter_name'],datafetchfile['course_id'],datafetchfile['linked_slide_file'],datafetchfile['slug'])):
-                                
-                                
+
+
                                 ##fetch course information
                                 three = int(three.replace('-',''))
                                 one = int(one.replace('-',''))
 
                                 fetchcourse = Category.objects.filter(unique_identifier = three ).first()
                                 if fetchcourse:
-                                    
+
                                     ##check if not exists critarea
                                     alreadyexistCritArea = Category.objects.filter(Q(unique_identifier = one) |Q(slug = five)).first()
 
@@ -2519,10 +2516,10 @@ class course_chapters(APIView):
                                         createcourses = Category(unique_identifier = one,name = two,slug = five,image =  "MainSlideImages/"+four,CategoryType = "SubCategory",parent = fetchcourse)
                                         createcourses.save()
 
-        
-                            
-                            
-                            
+
+
+
+
                             return Response({"status":True,"message":"Data Upload Successfully"})
 
                         else:
@@ -2575,21 +2572,21 @@ class exportpost(APIView):
                             ## fetch chapter
                             fetchchapter = Category.objects.filter(unique_identifier = three).first()
                             if fetchchapter:
-                                
+
                                 ##check if post not exists
                                 checkalreadypost = ReviewModel.objects.filter(unique_identifier = one).first()
                                 if not checkalreadypost:
                                     createpost = ReviewModel(title = two,author =author,images = "MainSlideImages/"+ six,categories = fetchchapter,tags = four,meta_description = five,content = seven,created_at = nine,updated_at = ten,unique_identifier = one,only_to_my_page = eleven,postslug = twelve)
 
                                     createpost.save()
-                             
-                          
 
 
-                            
-                        
-                        
-                        
+
+
+
+
+
+
                         return Response({"status":True,"message":"Data Upload Successfully"})
 
                     else:
@@ -2669,16 +2666,16 @@ class courses_chapters(APIView):
 
                 else:
                     j['chapters'] = []
-            
-    
+
+
             return Response({"status":True,"data":fetchcourses})
 
-        
-        
+
+
         except Exception as e:
             message = {'status':"error",'message':str(e)}
             return Response(message,status=500)
-   
+
 
 
 
@@ -2688,7 +2685,7 @@ class chapter_topics(APIView):
     def get(self,request):
         try:
             fetchchapters =  Category.objects.filter(CategoryType = "SubCategory").values('id','name','created_at','updated_at','unique_identifier','image')
-            
+
             for j in fetchchapters:
                 fetchtopics = ReviewModel.objects.filter(categories = j['id']).values('id','title','created_at','updated_at','unique_identifier','images')
                 if fetchtopics:
@@ -2696,12 +2693,12 @@ class chapter_topics(APIView):
 
                 else:
                     j['topics'] = []
-            
-            
+
+
             return Response({"status":True,"data":fetchchapters})
 
-        
+
 
         except Exception as e:
             message = {'status':"error",'message':str(e)}
-            return Response(message,status=500) 
+            return Response(message,status=500)
